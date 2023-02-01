@@ -49,7 +49,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             doResize(8);
         } else if (items.length == size) {
             doResize(items.length * 2);
-        } else if (size <= items.length / 4) {
+        } else if (size < items.length / 4) {
             doResize(items.length / 2);
         }
 
