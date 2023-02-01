@@ -23,23 +23,23 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return (index + items.length) % items.length;
     }
 
-    private void doResize(int size) {
+    private void doResize(int newSize) {
         // initialize array
         if (items == null) {
-            items = (T[]) new Object[size];
+            items = (T[]) new Object[newSize];
             nextLast = 1;
             return;
         }
 
         // point to first element
         int index = getIndex(nextFirst + 1);
-        T[] newItems = (T[]) new Object[size];
-        for (int i = 0; i < this.size; i++) {
+        T[] newItems = (T[]) new Object[newSize];
+        for (int i = 0; i < size; i++) {
             newItems[(index + i) % newItems.length] = items[getIndex(index + i)];
         }
         // by default size == this.size * 2 or size = this.size / 2
         // stay nextFirst location, move nextLast
-        nextLast = (nextLast + items.length) % size;
+        nextLast = (nextLast + items.length) % newSize;
         items = newItems;
 
     }
@@ -150,5 +150,4 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return items[getIndex(index++)];
         }
     }
-
 }
