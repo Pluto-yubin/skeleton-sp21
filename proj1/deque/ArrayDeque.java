@@ -119,10 +119,15 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ArrayDeque<?> that = (ArrayDeque<?>) o;
-        return nextFirst == that.nextFirst && nextLast == that.nextLast && size == that.size && Arrays.equals(items, that.items);
+        return nextFirst == that.nextFirst && nextLast == that.nextLast
+                && size == that.size && Arrays.equals(items, that.items);
     }
 
     @Override
@@ -145,4 +150,5 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return items[getIndex(index++)];
         }
     }
+
 }

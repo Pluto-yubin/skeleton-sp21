@@ -32,16 +32,21 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         Node before;
         Node next;
 
-        public Node(T value) {
+        Node(T value) {
             this.value = value;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Node node = (Node) o;
-            return Objects.equals(value, node.value) && Objects.equals(before, node.before) && Objects.equals(next, node.next);
+            return Objects.equals(value, node.value)
+                    && Objects.equals(before, node.before) && Objects.equals(next, node.next);
         }
 
         @Override
@@ -124,8 +129,12 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         LinkedListDeque<?> that = (LinkedListDeque<?>) o;
         return size == that.size && Objects.equals(sentinel, that.sentinel);
     }
@@ -138,7 +147,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     private class LinkedListDequeIterator implements Iterator<T> {
         private Node temp;
 
-        public LinkedListDequeIterator() {
+        LinkedListDequeIterator() {
             temp = sentinel.next;
         }
 
