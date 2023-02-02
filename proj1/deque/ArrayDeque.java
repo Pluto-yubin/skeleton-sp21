@@ -1,5 +1,7 @@
 package deque;
 
+import jh61b.junit.In;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -37,7 +39,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         for (int i = 0; i < size; i++) {
             newItems[(index + i) % newItems.length] = items[getIndex(index + i)];
         }
-        // by default size == this.size * 2 or size = this.size / 2
         // stay nextFirst location, move nextLast
         nextLast = (nextLast + items.length) % newSize;
         items = newItems;
@@ -94,22 +95,30 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public T removeFirst() {
-        resize();
-        nextFirst = getIndex(nextFirst + 1);
-        T item = items[nextFirst];
-        items[nextFirst] = null;
-        size -= 1;
-        return item;
+        if (size > 0) {
+            resize();
+            nextFirst = getIndex(nextFirst + 1);
+            T item = items[nextFirst];
+            items[nextFirst] = null;
+            size -= 1;
+            return item;
+        }
+
+        return null;
     }
 
     @Override
     public T removeLast() {
-        resize();
-        nextLast = getIndex(nextLast - 1);
-        T item = items[nextLast];
-        items[nextLast] = null;
-        size -= 1;
-        return item;
+        if (size > 0) {
+            resize();
+            nextLast = getIndex(nextLast - 1);
+            T item = items[nextLast];
+            items[nextLast] = null;
+            size -= 1;
+            return item;
+        }
+
+        return null;
     }
 
     @Override
@@ -150,4 +159,5 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return items[getIndex(index++)];
         }
     }
+
 }
