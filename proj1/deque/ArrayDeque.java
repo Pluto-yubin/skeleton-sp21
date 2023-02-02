@@ -1,5 +1,7 @@
 package deque;
 
+import jh61b.junit.In;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -13,11 +15,11 @@ import java.util.Objects;
  * @version: 1.0
  */
 public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
-    T[] items;
+    private T[] items;
 
-    int nextFirst, nextLast;
+    private int nextFirst, nextLast;
 
-    int size;
+    private int size;
 
     private int getIndex(int index) {
         return (index + items.length) % items.length;
@@ -37,8 +39,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         for (int i = 0; i < size; i++) {
             newItems[(index + i) % newItems.length] = items[getIndex(index + i)];
         }
-        // stay nextFirst location, move nextLast
         nextLast = (nextLast + items.length) % newSize;
+        nextFirst = (nextFirst + items.length) % newSize;
         items = newItems;
 
     }
@@ -156,6 +158,22 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         public T next() {
             return items[getIndex(index++)];
         }
+    }
+
+    public static void main(String[] args) {
+        ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
+        arrayDeque.addFirst(0);
+        System.out.println(arrayDeque.removeLast());
+        arrayDeque.addLast(2);
+        System.out.println(arrayDeque.removeLast());
+        arrayDeque.addLast(4);
+        System.out.println(arrayDeque.removeFirst());
+        arrayDeque.addLast(6);
+        arrayDeque.addLast(7);
+        arrayDeque.addLast(8);
+        arrayDeque.addFirst(9);
+        arrayDeque.addFirst(10);
+        System.out.println(arrayDeque.removeLast());
     }
 
 }

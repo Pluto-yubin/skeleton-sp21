@@ -127,6 +127,16 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return null;
     }
 
+    private T getRecursiveHelper(int index, Node node) {
+        if (index > 0) {
+            return getRecursiveHelper(index - 1, node.next);
+        }
+        return node.value;
+    }
+    public T getRecursive(int index) {
+        return getRecursiveHelper(index, sentinel);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
