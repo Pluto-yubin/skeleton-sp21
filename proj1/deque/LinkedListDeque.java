@@ -13,8 +13,8 @@ import java.util.Objects;
  */
 public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
-    Node sentinel;
-    int size;
+    private Node sentinel;
+    private int size;
 
     public LinkedListDeque() {
         sentinel = new Node(null);
@@ -49,10 +49,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             return Objects.equals(value, node.value);
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(value, before, next);
-        }
     }
 
     @Override
@@ -73,11 +69,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         sentinel.before.next = node;
         sentinel.before = node;
         size += 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     @Override
@@ -116,8 +107,8 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public T get(int index) {
-        if (index >= 0 && index <= size) {
-            Node temp = sentinel;
+        if (index >= 0 && index < size) {
+            Node temp = sentinel.next;
             while (index > 0) {
                 temp = temp.next;
                 index -= 1;
@@ -169,11 +160,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(sentinel, size);
-    }
-
     private class LinkedListDequeIterator implements Iterator<T> {
         private Node temp;
 
@@ -194,4 +180,19 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         }
     }
 
+//    public static void main(String[] args) {
+//        LinkedListDeque<Integer> integers = new LinkedListDeque<>();
+//        integers.addFirst(0);
+//        integers.addFirst(1);
+////        System.out.println(integers.removeFirst());
+//        integers.addFirst(2);
+////        System.out.println(integers.isEmpty());
+////        System.out.println(integers.removeFirst());
+//        ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
+//        arrayDeque.addFirst(0);
+//        arrayDeque.addFirst(1);
+//        arrayDeque.addFirst(2);
+//        System.out.println(integers.equals(arrayDeque));
+//    }
+//
 }

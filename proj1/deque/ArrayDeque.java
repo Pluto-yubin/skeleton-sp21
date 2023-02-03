@@ -157,12 +157,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(nextFirst, nextLast, size);
-        result = 31 * result + Arrays.hashCode(items);
-        return result;
-    }
 
     private class ArrayDequeIterator implements Iterator<T> {
         int index = nextFirst + 1;
