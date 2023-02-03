@@ -194,11 +194,4 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         }
     }
 
-    public static void main(String[] args) {
-        LinkedListDeque<Integer> integers = new LinkedListDeque<>();
-        LinkedListDeque<Integer> integers1 = new LinkedListDeque<>();
-        integers.equals(new ArrayDeque<Integer>());
-        System.out.println(integers.equals(integers1));
-
-    }
 }
