@@ -41,12 +41,12 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (!(o instanceof LinkedListDeque)) {
                 return false;
             }
+
             Node node = (Node) o;
-            return Objects.equals(value, node.value)
-                    && Objects.equals(before, node.before) && Objects.equals(next, node.next);
+            return Objects.equals(value, node.value);
         }
 
         @Override
@@ -137,16 +137,36 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return getRecursiveHelper(index, sentinel);
     }
 
+    private boolean isEqual(Deque<?> deque) {
+        if (size() == deque.size()) {
+            for (int i = 0; i < size; i++) {
+                if (!get(i).equals(deque.get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null) {
             return false;
         }
-        LinkedListDeque<?> that = (LinkedListDeque<?>) o;
-        return size == that.size && Objects.equals(sentinel, that.sentinel);
+
+        if (o instanceof LinkedListDeque) {
+            LinkedListDeque<?> that = (LinkedListDeque<?>) o;
+            return isEqual(that);
+
+        } else if (o instanceof ArrayDeque) {
+            ArrayDeque<?> that = (ArrayDeque<?>) o;
+            return isEqual(that);
+        }
+        return false;
     }
 
     @Override
@@ -172,5 +192,13 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             temp = temp.next;
             return value;
         }
+    }
+
+    public static void main(String[] args) {
+        LinkedListDeque<Integer> integers = new LinkedListDeque<>();
+        LinkedListDeque<Integer> integers1 = new LinkedListDeque<>();
+        integers.equals(new ArrayDeque<Integer>());
+        System.out.println(integers.equals(integers1));
+
     }
 }

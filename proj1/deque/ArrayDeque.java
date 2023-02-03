@@ -32,20 +32,21 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
 
         // point to first element
-        int index = getIndex(nextFirst + 1);
+//        int index = getIndex(nextFirst + 1);
+        int index = (nextFirst + 1) % newSize;
         T[] newItems = (T[]) new Object[newSize];
         for (int i = 0; i < size; i++) {
             newItems[(index + i) % newItems.length] = items[getIndex(index + i)];
         }
-        nextLast = (nextLast + items.length) % newSize;
-        nextFirst = (nextFirst + items.length) % newSize;
+
+        nextLast = (items.length + index) % newSize;
         items = newItems;
 
     }
 
     private void resize() {
         if (items == null) {
-            doResize(8);
+            doResize(1);
         } else if (items.length == size) {
             doResize(items.length * 2);
         } else if (size < items.length / 4) {
@@ -124,17 +125,36 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return items[getIndex(nextFirst + 1 + index)];
     }
 
+    private boolean isEqual(Deque<?> deque) {
+        if (size() == deque.size()) {
+            for (int i = 0; i < size; i++) {
+                if (!get(i).equals(deque.get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null) {
             return false;
         }
-        ArrayDeque<?> that = (ArrayDeque<?>) o;
-        return nextFirst == that.nextFirst && nextLast == that.nextLast
-                && size == that.size && Arrays.equals(items, that.items);
+
+        if (o instanceof LinkedListDeque) {
+            LinkedListDeque<?> that = (LinkedListDeque<?>) o;
+            return isEqual(that);
+
+        } else if (o instanceof ArrayDeque) {
+            ArrayDeque<?> that = (ArrayDeque<?>) o;
+            return isEqual(that);
+        }
+        return false;
     }
 
     @Override
@@ -156,22 +176,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         public T next() {
             return items[getIndex(index++)];
         }
-    }
-
-    public static void main(String[] args) {
-        ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
-        arrayDeque.addFirst(0);
-        System.out.println(arrayDeque.removeLast());
-        arrayDeque.addLast(2);
-        System.out.println(arrayDeque.removeLast());
-        arrayDeque.addLast(4);
-        System.out.println(arrayDeque.removeFirst());
-        arrayDeque.addLast(6);
-        arrayDeque.addLast(7);
-        arrayDeque.addLast(8);
-        arrayDeque.addFirst(9);
-        arrayDeque.addFirst(10);
-        System.out.println(arrayDeque.removeLast());
     }
 
 }
