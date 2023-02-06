@@ -125,7 +125,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return node.value;
     }
     public T getRecursive(int index) {
-        return getRecursiveHelper(index, sentinel);
+        return getRecursiveHelper(index, sentinel.next);
     }
 
     private boolean isEqual(Deque<?> deque) {

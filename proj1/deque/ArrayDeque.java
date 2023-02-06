@@ -36,20 +36,24 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         int index = (nextFirst + 1) % newSize;
         T[] newItems = (T[]) new Object[newSize];
         for (int i = 0; i < size; i++) {
-            newItems[(index + i) % newItems.length] = items[getIndex(index + i)];
+            newItems[index + i] = get(i);
         }
 
-        nextLast = (items.length + index) % newSize;
+        if (items.length < newSize) {
+            nextLast = (items.length + index) % newSize;
+        } else {
+            nextLast = (index + 1) % newSize;
+        }
         items = newItems;
 
     }
 
-    private void resize() {
+    private void resize(boolean isAdd) {
         if (items == null) {
-            doResize(1);
-        } else if (items.length == size) {
+            doResize(8);
+        } else if (isAdd && items.length == size) {
             doResize(items.length * 2);
-        } else if (size < items.length / 4) {
+        } else if (!isAdd && size < items.length / 4) {
             doResize(items.length / 2);
         }
 
@@ -62,7 +66,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public void addFirst(T item) {
-        resize();
+        resize(true);
         items[getIndex(nextFirst)] = item;
         nextFirst = getIndex(nextFirst - 1);
         size += 1;
@@ -71,7 +75,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public void addLast(T item) {
-        resize();
+        resize(true);
         items[getIndex(nextLast)] = item;
         nextLast = getIndex(nextLast + 1);
         size += 1;
@@ -95,7 +99,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     @Override
     public T removeFirst() {
         if (size > 0) {
-            resize();
+            resize(false);
             nextFirst = getIndex(nextFirst + 1);
             T item = items[nextFirst];
             items[nextFirst] = null;
@@ -109,7 +113,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     @Override
     public T removeLast() {
         if (size > 0) {
-            resize();
+            resize(false);
             nextLast = getIndex(nextLast - 1);
             T item = items[nextLast];
             items[nextLast] = null;
@@ -160,14 +164,16 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         int index = nextFirst + 1;
+        int count;
 
         @Override
         public boolean hasNext() {
-            return size == 0;
+            return count < size;
         }
 
         @Override
         public T next() {
+            count += 1;
             return items[getIndex(index++)];
         }
     }
