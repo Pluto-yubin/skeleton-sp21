@@ -1,8 +1,6 @@
 package deque;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Objects;
 
 /**
  * @package: deque
@@ -36,7 +34,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         int index = (nextFirst + 1) % newSize;
         T[] newItems = (T[]) new Object[newSize];
         for (int i = 0; i < size; i++) {
-            newItems[index + i] = get(i);
+            newItems[(index + i) % newSize] = get(i);
         }
 
         if (items.length < newSize) {
