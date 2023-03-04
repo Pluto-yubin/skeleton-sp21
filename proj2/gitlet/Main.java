@@ -19,6 +19,9 @@ public class Main {
                 // TODO: handle the `add [filename]` command
                 break;
             // TODO: FILL THE REST IN
+            default:
+                throw new GitletException();
+
         }
     }
 }

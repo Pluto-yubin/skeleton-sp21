@@ -1,29 +1,64 @@
 package gitlet;
 
+import gitlet.model.Commit;
+import gitlet.model.Constant;
+
 import java.io.File;
-import static gitlet.Utils.*;
+import java.io.IOException;
+import java.util.Objects;
 
-// TODO: any imports you need here
+import static gitlet.Utils.join;
 
-/** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
+/**
+ * Represents a gitlet repository.
+ * does at a high level.
  *
- *  @author TODO
+ * @author zyb
  */
 public class Repository {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Repository class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided two examples for you.
-     */
 
-    /** The current working directory. */
+    /**
+     * The current working directory.
+     */
     public static final File CWD = new File(System.getProperty("user.dir"));
-    /** The .gitlet directory. */
+
+    /**
+     * The .gitlet directory.
+     */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    /* TODO: fill in the rest of this class. */
+    /**
+     * The HEAD_FILE
+     */
+    public static final File HEAD_FILE = join(GITLET_DIR, Constant.HEAD);
+
+    /**
+     * The head commit, for another word, the latest commit that user gets
+     */
+    private static Commit head;
+
+    /**
+     * The objects directory.
+     */
+    private static final File OBJECT_DIR = join(GITLET_DIR, "objects");
+
+    static {
+        if (HEAD_FILE.exists()) {
+            String branch = Utils.readContentsAsString(HEAD_FILE);
+            String commitCode = Utils.readContentFromFilePath(branch);
+            File commit = Utils.getFileByHashcode(commitCode);
+            head = Utils.readObject(commit, Commit.class);
+        }
+    }
+
+    public static void init() throws IOException {
+        if (!GITLET_DIR.exists()) {
+            GITLET_DIR.mkdir();
+            OBJECT_DIR.mkdir();
+            HEAD_FILE.createNewFile();
+        }
+
+
+    }
+
 }
