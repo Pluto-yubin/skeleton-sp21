@@ -1,5 +1,7 @@
 package gitlet;
 
+import gitlet.model.Commit;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -118,6 +120,27 @@ class Utils {
      */
     static String readContentsAsString(File file) {
         return new String(readContents(file), StandardCharsets.UTF_8);
+    }
+
+    static String[] splitHashCode(String s) {
+        String s1 = s.substring(0, 2);
+        String s2 = s.substring(2);
+        return new String[] {s1, s2};
+    }
+
+    static String persistentCommit(Commit commit) throws IOException {
+        String code = sha1(commit);
+        String[] codes = splitHashCode(code);
+        File codeDir = join(Repository.OBJECT_DIR, codes[0]);
+
+        if (!codeDir.exists()) {
+            codeDir.mkdir();
+        }
+
+        File codeFile = join(codeDir, codes[1]);
+        codeFile.createNewFile();
+        writeContents(codeFile, commit);
+        return code;
     }
 
     static String readContentFromFilePath(String path) {

@@ -12,4 +12,5 @@ public class Constant {
     public static final String OBJECTS = "objects";
     public static final String REFS = "refs";
     public static final String HEAD = "HEAD";
+    public static final String STAR = "*";
 }

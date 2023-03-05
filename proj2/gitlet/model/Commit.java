@@ -1,6 +1,7 @@
 package gitlet.model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -16,6 +17,11 @@ import java.util.Date;
  * @author zyb
  */
 public class Commit implements Serializable {
+
+    private static final String TIMESTAMP_FORMAT = "00:00:00 UTC, Thursday, 1 January 1970";
+
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss UTC, H, dd MM yy");
+
     /**
      * The message of this Commit.
      */
@@ -68,4 +74,10 @@ public class Commit implements Serializable {
         this.tree = tree;
     }
 
+    public Commit() {}
+
+    public Commit(String message, Date commitTime) {
+        this.message = message;
+        this.commitTime = commitTime;
+    }
 }
