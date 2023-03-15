@@ -3,6 +3,7 @@ package gitlet.model;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Represents a gitlet commit object.
@@ -20,7 +21,7 @@ public class Commit implements Serializable {
 
     private static final String TIMESTAMP_FORMAT = "00:00:00 UTC, Thursday, 1 January 1970";
 
-    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss UTC, H, dd MM yy");
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss UTC, H, dd MM yy", Locale.ENGLISH);
 
     /**
      * The message of this Commit.

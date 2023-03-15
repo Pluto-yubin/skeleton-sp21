@@ -18,7 +18,7 @@ public class CommitUtil {
     public static String commit(String message) throws IOException {
         Commit commit = new Commit(message, new Date());
         // TODO: add staging file into commit
-        return Utils.persistentCommit(commit);
+        return Utils.persistObject(commit);
     }
 
     public static String initCommit() throws IOException {

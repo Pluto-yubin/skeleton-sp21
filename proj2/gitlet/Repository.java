@@ -5,6 +5,11 @@ import gitlet.model.Constant;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import static gitlet.Utils.join;
 
@@ -70,6 +75,21 @@ public class Repository {
     }
 
     public static void add(String ...filenames) {
+        List<File> files = new LinkedList<>();
+        String path = System.getProperty("user.dir");
+        try {
+            for (String filename : filenames) {
+                if (Constant.STAR.equals(filename)) {
+                    files.addAll(List.of(Objects.requireNonNull(join(path).listFiles())));
+                    break;
+                } else {
+                    files.add(Utils.join(path, filename));
+                }
+            }
+        } catch (NullPointerException ignored) {}
+    }
+
+    private static void addToStaging(List<File> files) {
 
     }
 

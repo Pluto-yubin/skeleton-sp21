@@ -23,7 +23,7 @@ import static gitlet.model.Constant.OBJECTS;
  *
  * @author P. N. Hilfinger
  */
-class Utils {
+public class Utils {
 
     /**
      * The length of a complete SHA-1 UID as a hexadecimal numeral.
@@ -118,7 +118,7 @@ class Utils {
      * be a normal file.  Throws IllegalArgumentException
      * in case of problems.
      */
-    static String readContentsAsString(File file) {
+    public static String readContentsAsString(File file) {
         return new String(readContents(file), StandardCharsets.UTF_8);
     }
 
@@ -126,6 +126,21 @@ class Utils {
         String s1 = s.substring(0, 2);
         String s2 = s.substring(2);
         return new String[] {s1, s2};
+    }
+
+    public static String persistObject(Object o) throws IOException {
+        String code = sha1(o);
+        String[] codes = splitHashCode(code);
+        File codeDir = join(Repository.OBJECT_DIR, codes[0]);
+
+        if (!codeDir.exists()) {
+            codeDir.mkdir();
+        }
+
+        File codeFile = join(codeDir, codes[1]);
+        codeFile.createNewFile();
+        writeContents(codeFile, o);
+        return code;
     }
 
     static String persistentCommit(Commit commit) throws IOException {
