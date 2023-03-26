@@ -2,11 +2,11 @@ package gitlet;
 
 import gitlet.model.Commit;
 import gitlet.model.Constant;
+import gitlet.model.FileTree;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +37,8 @@ public class Repository {
     public static final File HEAD_FILE = join(GITLET_DIR, Constant.HEAD);
 
     public static final File REFS_FILE = join(GITLET_DIR, Constant.REFS);
+
+    public static final File INDEX_FILE = join(GITLET_DIR, Constant.INDEX);
 
     /**
      * The head commit, for another word, the latest commit that user gets
@@ -74,23 +76,61 @@ public class Repository {
         }
     }
 
-    public static void add(String ...filenames) {
+    private static List<File> getFileListFromArgs(String ...filenames) {
         List<File> files = new LinkedList<>();
         String path = System.getProperty("user.dir");
+        for (String filename : filenames) {
+            if (Constant.STAR.equals(filename)) {
+                files.addAll(List.of(Objects.requireNonNull(join(path).listFiles())));
+                break;
+            } else {
+                files.add(Utils.join(path, filename));
+            }
+        }
+        return files;
+    }
+    /**
+     * Add files to the staging area.
+     */
+    public static void add(String ...filenames) throws IOException {
         try {
-            for (String filename : filenames) {
-                if (Constant.STAR.equals(filename)) {
-                    files.addAll(List.of(Objects.requireNonNull(join(path).listFiles())));
-                    break;
-                } else {
-                    files.add(Utils.join(path, filename));
-                }
+            List<File> files = getFileListFromArgs(filenames);
+            if (INDEX_FILE.exists()) {
+                addToStaging(files, Utils.readObject(INDEX_FILE, FileTree.class));
+            } else {
+                INDEX_FILE.createNewFile();
+                addToStaging(files, null);
             }
         } catch (NullPointerException ignored) {}
     }
 
-    private static void addToStaging(List<File> files) {
+    private static void addToStaging(List<File> files, FileTree root) throws IOException {
+        if (Objects.nonNull(root)) {
+            for (File file : files) {
+                FileTree fileTree = FileTreeUtil.findFileTree(file.getName(), root);
 
+                if (Objects.isNull(fileTree)) {
+                    // 新文件
+                    root.setChildren(List.of(FileTreeUtil.createFileTreeRecursively(file)));
+                } else if (fileTree.isNotFile() && Objects.nonNull(file.listFiles())) {
+                    // 如果是文件夹，添加其子文件
+                    addToStaging(Arrays.asList(file.listFiles()), fileTree);
+                } else {
+                    // 先判断文件内容是否变化再判断是否更新
+                    String stagingFileSha1Code = Utils.sha1(Utils.readContentsAsString(file));
+                    if (!fileTree.getFileContentSha1Code().equals(stagingFileSha1Code)) {
+                        FileTreeUtil.removeFileTree(Utils.sha1(fileTree), root);
+                        root.getChildren().add(FileTreeUtil.createFileTreeRecursively(file));
+                    }
+                }
+            }
+        } else {
+            root = new FileTree();
+            for (File file : files) {
+                root.getChildren().add(FileTreeUtil.createFileTreeRecursively(file));
+            }
+        }
+        Utils.writeObject(INDEX_FILE, root);
     }
 
 }

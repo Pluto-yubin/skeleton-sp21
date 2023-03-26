@@ -23,6 +23,6 @@ public class CommitUtil {
 
     public static String initCommit() throws IOException {
         Commit commit = new Commit("initial commit", new Date(0));
-        return Utils.persistentCommit(commit);
+        return Utils.persistObject(commit);
     }
 }

@@ -5,7 +5,6 @@ import gitlet.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,8 +26,24 @@ public class FileTree implements Serializable {
         return children;
     }
 
+    public String getFileContentSha1Code() {
+        return node.getSha1Code();
+    }
+
+    public void setChildren(List<String> children) {
+        this.children = children;
+    }
+
+    public String getFileName() {
+        return node.getName();
+    }
+
     public boolean isFile() {
         return Constant.BLOBS.equals(node.getType());
+    }
+
+    public boolean isNotFile() {
+        return !isFile();
     }
 
     public FileTree(File file) throws IOException {
@@ -36,15 +51,14 @@ public class FileTree implements Serializable {
         node.setName(file.getName());
         if (file.isFile()) {
             node.setType(Constant.BLOBS);
-            Blob blob = new Blob();
-            blob.setText(Utils.readContentsAsString(file));
-            node.setHashCode(Utils.persistObject(blob));
+            node.setSha1Code(Utils.persistObject(Utils.readContentsAsString(file)));
         } else {
             node.setType(Constant.TREE);
         }
         this.node = node;
         children = new LinkedList<>();
     }
+
 
     public FileTree() {}
 
@@ -53,6 +67,8 @@ public class FileTree implements Serializable {
         String name;
 
         String hashCode;
+
+        String sha1Code;
 
         /** blob or tree */
         String type;
@@ -79,6 +95,14 @@ public class FileTree implements Serializable {
 
         public void setType(String type) {
             this.type = type;
+        }
+
+        public String getSha1Code() {
+            return sha1Code;
+        }
+
+        public void setSha1Code(String sha1Code) {
+            this.sha1Code = sha1Code;
         }
     }
 }

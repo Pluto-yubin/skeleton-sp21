@@ -15,5 +15,6 @@ public class Constant {
     public static final String STAR = "*";
     public static final String BLOBS = "blobs";
     public static final String TREE = "tree";
+    public static final String INDEX = "index";
 
 }

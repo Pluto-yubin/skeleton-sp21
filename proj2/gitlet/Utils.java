@@ -1,7 +1,5 @@
 package gitlet;
 
-import gitlet.model.Commit;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,9 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
-
-import static gitlet.model.Constant.OBJECTS;
-
 
 /**
  * Assorted utilities.
@@ -36,7 +31,7 @@ public class Utils {
      * Returns the SHA-1 hash of the concatenation of VALS, which may
      * be any mixture of byte arrays and Strings.
      */
-    static String sha1(Object... vals) {
+    public static String sha1(Object... vals) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             for (Object val : vals) {
@@ -143,31 +138,19 @@ public class Utils {
         return code;
     }
 
-    static String persistentCommit(Commit commit) throws IOException {
-        String code = sha1(commit);
-        String[] codes = splitHashCode(code);
-        File codeDir = join(Repository.OBJECT_DIR, codes[0]);
-
-        if (!codeDir.exists()) {
-            codeDir.mkdir();
-        }
-
-        File codeFile = join(codeDir, codes[1]);
-        codeFile.createNewFile();
-        writeContents(codeFile, commit);
-        return code;
-    }
-
     static String readContentFromFilePath(String path) {
         File file = Paths.get(path).toFile();
         return readContentsAsString(file);
     }
 
-    static File getFileByHashcode(String code) {
-        String code1 = code.substring(0, 2);
-        String code2 = code.substring(2);
-        File obj = join(Repository.GITLET_DIR, OBJECTS);
-        return join(obj, code1, code2);
+    public static File getFileByHashcode(String code) {
+        String[] codes = splitHashCode(code);
+        File codeDir = join(Repository.OBJECT_DIR, codes[0]);
+        File result = join(codeDir, codes[1]);
+        if (!result.exists()) {
+            throw new GitletException("File " + code + "does not exits");
+        }
+        return result;
     }
 
     /**
@@ -201,7 +184,7 @@ public class Utils {
      * Return an object of type T read from FILE, casting it to EXPECTEDCLASS.
      * Throws IllegalArgumentException in case of problems.
      */
-    static <T extends Serializable> T readObject(File file,
+    public static <T extends Serializable> T readObject(File file,
                                                  Class<T> expectedClass) {
         try {
             ObjectInputStream in =
@@ -213,6 +196,11 @@ public class Utils {
                 | ClassNotFoundException excp) {
             throw new IllegalArgumentException(excp.getMessage());
         }
+    }
+
+    public static <T extends Serializable> T readObject(String sha1Code,
+                                                        Class<T> expectedClass) {
+        return readObject(getFileByHashcode(sha1Code), expectedClass);
     }
 
     /**
@@ -316,5 +304,12 @@ public class Utils {
     static void message(String msg, Object... args) {
         System.out.printf(msg, args);
         System.out.println();
+    }
+
+    public static void removeObject(String sha1Code) {
+        if (sha1Code != null && sha1Code.length() > 2) {
+            File fileByHashcode = getFileByHashcode(sha1Code);
+            fileByHashcode.deleteOnExit();
+        }
     }
 }
