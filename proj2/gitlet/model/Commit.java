@@ -21,7 +21,7 @@ public class Commit implements Serializable {
 
     private static final String TIMESTAMP_FORMAT = "00:00:00 UTC, Thursday, 1 January 1970";
 
-    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss UTC, H, dd MM yy", Locale.ENGLISH);
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss zzz, EEEE, d MMMM yyyy", Locale.ENGLISH);
 
     /**
      * The message of this Commit.
@@ -80,5 +80,15 @@ public class Commit implements Serializable {
     public Commit(String message, Date commitTime) {
         this.message = message;
         this.commitTime = commitTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Commit{" +
+                "message='" + message + '\'' +
+                ", commitTime=" + FORMAT.format(commitTime) +
+                ", parent='" + parent + '\'' +
+                ", tree='" + tree + '\'' +
+                '}';
     }
 }

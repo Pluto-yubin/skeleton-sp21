@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static gitlet.Utils.join;
 
@@ -39,7 +40,6 @@ public class Repository {
     public static final File REFS_FILE = join(GITLET_DIR, Constant.REFS);
 
     public static final File INDEX_FILE = join(GITLET_DIR, Constant.INDEX);
-
     /**
      * The head commit, for another word, the latest commit that user gets
      */
@@ -78,13 +78,15 @@ public class Repository {
 
     private static List<File> getFileListFromArgs(String ...filenames) {
         List<File> files = new LinkedList<>();
-        String path = System.getProperty("user.dir");
         for (String filename : filenames) {
             if (Constant.STAR.equals(filename)) {
-                files.addAll(List.of(Objects.requireNonNull(join(path).listFiles())));
+                File[] fileList = join(CWD).listFiles();
+                if (Objects.nonNull(fileList)) {
+                    files.addAll(Arrays.stream(fileList).collect(Collectors.toList()));
+                }
                 break;
             } else {
-                files.add(Utils.join(path, filename));
+                files.add(Utils.join(CWD, filename));
             }
         }
         return files;
@@ -106,12 +108,15 @@ public class Repository {
 
     private static void addToStaging(List<File> files, FileTree root) throws IOException {
         if (Objects.nonNull(root)) {
+            List<String> children = new LinkedList<>();
             for (File file : files) {
                 FileTree fileTree = FileTreeUtil.findFileTree(file.getName(), root);
 
                 if (Objects.isNull(fileTree)) {
                     // 新文件
-                    root.setChildren(List.of(FileTreeUtil.createFileTreeRecursively(file)));
+                    String treeCode = FileTreeUtil.createFileTreeRecursively(file);
+                    children.add(treeCode);
+                    root.setChildren(children);
                 } else if (fileTree.isNotFile() && Objects.nonNull(file.listFiles())) {
                     // 如果是文件夹，添加其子文件
                     addToStaging(Arrays.asList(file.listFiles()), fileTree);

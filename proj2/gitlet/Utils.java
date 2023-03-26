@@ -27,6 +27,14 @@ public class Utils {
 
     /* SHA-1 HASH VALUES. */
 
+    public static byte[] transformObjectToByteArray(Object val) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(val);
+        oos.close();
+        return bos.toByteArray();
+    }
+
     /**
      * Returns the SHA-1 hash of the concatenation of VALS, which may
      * be any mixture of byte arrays and Strings.
@@ -40,9 +48,9 @@ public class Utils {
                 } else if (val instanceof String) {
                     md.update(((String) val).getBytes(StandardCharsets.UTF_8));
                 } else {
-                    throw new IllegalArgumentException("improper type to sha1");
+                    md.update(transformObjectToByteArray(val));
                 }
-            }
+                }
             Formatter result = new Formatter();
             for (byte b : md.digest()) {
                 result.format("%02x", b);
@@ -50,6 +58,8 @@ public class Utils {
             return result.toString();
         } catch (NoSuchAlgorithmException excp) {
             throw new IllegalArgumentException("System does not support SHA-1");
+        } catch (IOException ignored) {
+            return null;
         }
     }
 
@@ -139,7 +149,7 @@ public class Utils {
     }
 
     static String readContentFromFilePath(String path) {
-        File file = Paths.get(path).toFile();
+        File file = join(Repository.GITLET_DIR.getPath(), path);
         return readContentsAsString(file);
     }
 
@@ -170,8 +180,10 @@ public class Utils {
             for (Object obj : contents) {
                 if (obj instanceof byte[]) {
                     str.write((byte[]) obj);
-                } else {
+                } else if (obj instanceof String){
                     str.write(((String) obj).getBytes(StandardCharsets.UTF_8));
+                } else {
+                    str.write(transformObjectToByteArray(obj));
                 }
             }
             str.close();
