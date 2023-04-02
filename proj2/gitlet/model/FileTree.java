@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @package: gitlet
@@ -35,6 +36,9 @@ public class FileTree implements Serializable {
     }
 
     public String getFileName() {
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getName();
     }
 
@@ -44,6 +48,14 @@ public class FileTree implements Serializable {
 
     public boolean isNotFile() {
         return !isFile();
+    }
+
+    @Override
+    public String toString() {
+        return "FileTree{" +
+                "node=" + node +
+                ", children=" + children +
+                '}';
     }
 
     public FileTree(File file) throws IOException {
@@ -60,13 +72,14 @@ public class FileTree implements Serializable {
     }
 
 
-    public FileTree() {}
+    public FileTree() {
+        children = new LinkedList<>();
+        node = new Node();
+    }
 
-    private static class Node {
+    private static class Node implements Serializable {
         /** filename or dir name */
         String name;
-
-        String hashCode;
 
         String sha1Code;
 
@@ -79,14 +92,6 @@ public class FileTree implements Serializable {
 
         public void setName(String name) {
             this.name = name;
-        }
-
-        public String getHashCode() {
-            return hashCode;
-        }
-
-        public void setHashCode(String hashCode) {
-            this.hashCode = hashCode;
         }
 
         public String getType() {
@@ -103,6 +108,15 @@ public class FileTree implements Serializable {
 
         public void setSha1Code(String sha1Code) {
             this.sha1Code = sha1Code;
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "name='" + name + '\'' +
+                    ", sha1Code='" + sha1Code + '\'' +
+                    ", type='" + type + '\'' +
+                    '}';
         }
     }
 }

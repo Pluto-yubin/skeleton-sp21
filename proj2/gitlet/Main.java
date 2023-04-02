@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
@@ -18,8 +19,13 @@ public class Main {
                 Repository.init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
-
+                Repository.add(Arrays.copyOfRange(args, 1, args.length));
+                break;
+            case "Commit":
+                if (args.length == 1) {
+                    throw new GitletException("Please enter a commit message.");
+                }
+                Repository.commit(args[1]);
                 break;
             // TODO: FILL THE REST IN
             default:

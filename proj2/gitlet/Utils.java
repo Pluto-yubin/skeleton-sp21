@@ -1,5 +1,7 @@
 package gitlet;
 
+import gitlet.model.FileTree;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Assorted utilities.
@@ -151,6 +154,15 @@ public class Utils {
     static String readContentFromFilePath(String path) {
         File file = join(Repository.GITLET_DIR.getPath(), path);
         return readContentsAsString(file);
+    }
+
+    static File getFolderByHashCode(String code) {
+        String[] codes = splitHashCode(code);
+        File result = join(Repository.OBJECT_DIR, codes[0]);
+        if (!result.exists()) {
+            throw new GitletException("Folder " + code + "does not exits");
+        }
+        return result;
     }
 
     public static File getFileByHashcode(String code) {
@@ -321,7 +333,13 @@ public class Utils {
     public static void removeObject(String sha1Code) {
         if (sha1Code != null && sha1Code.length() > 2) {
             File fileByHashcode = getFileByHashcode(sha1Code);
+            File folderByHashCode = getFolderByHashCode(sha1Code);
+            String[] list = folderByHashCode.list();
+            if (folderByHashCode.isDirectory() && (Objects.isNull(list) || list.length == 1)) {
+                folderByHashCode.deleteOnExit();
+            }
             fileByHashcode.deleteOnExit();
         }
     }
+
 }

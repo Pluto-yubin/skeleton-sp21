@@ -82,7 +82,7 @@ public class Repository {
             if (Constant.STAR.equals(filename)) {
                 File[] fileList = join(CWD).listFiles();
                 if (Objects.nonNull(fileList)) {
-                    files.addAll(Arrays.stream(fileList).collect(Collectors.toList()));
+                    files.addAll(Arrays.stream(fileList).filter(file -> CommitUtil.fileIsNotCommit(file, head)).collect(Collectors.toList()));
                 }
                 break;
             } else {
@@ -103,7 +103,9 @@ public class Repository {
                 INDEX_FILE.createNewFile();
                 addToStaging(files, null);
             }
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+            ignored.printStackTrace();
+        }
     }
 
     private static void addToStaging(List<File> files, FileTree root) throws IOException {
@@ -136,6 +138,20 @@ public class Repository {
             }
         }
         Utils.writeObject(INDEX_FILE, root);
+    }
+
+    public static void commit(String message) throws IOException {
+        if (!INDEX_FILE.exists()) {
+            throw new GitletException("No changes added to the commit.");
+        } else if (message == null || "".equals(message) || " ".equals(message)) {
+            throw new GitletException("Please enter a commit message.");
+        }
+
+        Commit commit = CommitUtil.commit(message);
+        String branchPath = Utils.readContentsAsString(HEAD_FILE);
+        File lastCommit = join(branchPath);
+        commit.setParent(Utils.readContentsAsString(lastCommit));
+        Utils.writeContents(lastCommit, Utils.persistObject(commit));
     }
 
 }

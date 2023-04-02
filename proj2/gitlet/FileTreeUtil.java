@@ -10,7 +10,7 @@ import java.util.Objects;
  * @package: gitlet
  * @className: FileTreeUtil
  * @author: zyb
- * @description: TODO
+ * @description: FileTree工具类
  * @date: 2023/3/6 13:44
  * @version: 1.0
  */
@@ -36,7 +36,7 @@ public class FileTreeUtil {
             FileTree tree = Utils.readObject(Utils.getFileByHashcode(child), FileTree.class);
             FileTree fileTree = findFileTree(fileName, tree);
             if (Objects.nonNull(fileTree)) {
-                findFileTree(fileName, fileTree);
+                return fileTree;
             }
         }
         return null;
